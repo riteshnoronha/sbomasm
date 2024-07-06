@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-    TOOL_NAME: ${{ github.repository.name }}
+    TOOL_NAME: ${{ github.repository }}
     SUPPLIER_NAME: Interlynk
     SUPPLIER_URL: https://interlynk.io
     DEFAULT_TAG: v0.0.1
