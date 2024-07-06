@@ -13,6 +13,7 @@ env:
     TOOL_NAME: ${{ github.repository }}
     SUPPLIER_NAME: Interlynk
     SUPPLIER_URL: https://interlynk.io
+    DEFAULT_TAG: v0.0.1
 
 jobs:
   build-sbom:
@@ -29,7 +30,8 @@ jobs:
 
       - name: Get Tag
         id: get_tag
-        run: echo "LATEST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        run: echo "LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo 'v0.0.1')" >> $GITHUB_ENV
+
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -37,11 +39,10 @@ jobs:
           python-version: '3.x'  # Specify the Python version needed
   
       - name: Checkout Python SBOM tool
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           repository: 'interlynk-io/pylynk'  # Replace with actual repo
           path: '$RUNNER_TEMP/pylynk'
-          ref: latest
   
       - name: Install Python dependencies
         run: |
