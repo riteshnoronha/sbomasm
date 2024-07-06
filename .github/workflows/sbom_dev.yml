@@ -63,5 +63,5 @@ jobs:
           ls -la ${{ env.SBOM_TEMP_DIR}}/_manifest/spdx_2.2/
 
       - name: Upload SBOM 
-        run: python3 ${{ env.PYLYNK_TEMP_DIR }}/pylynk.py upload --prod ${{env.TOOL_NAME}} --env ${{ env.SBOM_ENV }} --sbom ${{ env.SBOM_TEMP_DIR }}/_manifest/spdx_2.2/manifest.spdx.json --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
+        run: python3 ${{ env.PYLYNK_TEMP_DIR }}/pylynk.py --verbose upload --prod ${{env.TOOL_NAME}} --env ${{ env.SBOM_ENV }} --sbom ${{ env.SBOM_TEMP_DIR }}/_manifest/spdx_2.2/manifest.spdx.json --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
 
