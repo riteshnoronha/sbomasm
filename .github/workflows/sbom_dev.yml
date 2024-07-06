@@ -19,7 +19,7 @@ env:
     SBOM_ENV: development
     MS_SBOM_TOOL_URL: https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
     MS_SBOM_SBOM_PATH: $RUNNER_TEMP/sbom/_manifest/spdx_2.2/manifest.spdx.json
-    SBOM_EXCLUDE_DIRS: **/samples/**
+    SBOM_EXCLUDE_DIRS: "**/samples/**"
 
 
 jobs:
