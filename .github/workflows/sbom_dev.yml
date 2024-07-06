@@ -42,10 +42,9 @@ jobs:
         run: echo "TEMP_DIR=$RUNNER_TEMP/pylynk" >> $GITHUB_ENV
   
       - name: Checkout Python SBOM tool
-        uses: actions/checkout@v3
-        with:
-          repository: 'interlynk-io/pylynk'  # Replace with actual repo
-          path: ${{ env.TEMP_DIR }}
+        run: |
+          git clone https://github.com/interlynk-io/pylynk.git ${{ env.TEMP_DIR }}
+          echo "Cloned repo to ${{ env.TEMP_DIR }}"
   
       - name: Install Python dependencies
         run: |
