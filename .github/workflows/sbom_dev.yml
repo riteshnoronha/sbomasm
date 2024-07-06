@@ -16,6 +16,7 @@ env:
     DEFAULT_TAG: v0.0.1
     PYLYNK_TEMP_DIR: $RUNNER_TEMP/pylynk
     MS_SBOM_TOOL_URL: https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
+    MS_SBOM_SBOM_PATH: ${{ env.SBOM_TEMP_DIR}}/_manifest/spdx_2.2/manifest.spdx.json
     SBOM_TEMP_DIR: $RUNNER_TEMP/sbom
     SBOM_ENV: development
 
@@ -63,5 +64,8 @@ jobs:
           ls -la ${{ env.SBOM_TEMP_DIR}}/_manifest/spdx_2.2/
 
       - name: Upload SBOM 
-        run: python3 ${{ env.PYLYNK_TEMP_DIR }}/pylynk.py --verbose upload --prod ${{env.TOOL_NAME}} --env ${{ env.SBOM_ENV }} --sbom ${{ env.SBOM_TEMP_DIR }}/_manifest/spdx_2.2/manifest.spdx.json --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
+        run: |
+          ls -la ${{ env.MS_SBOM_SBOM_PATH }} 
+          env | sort
+          python3 ${{ env.PYLYNK_TEMP_DIR }}/pylynk.py --verbose upload --prod ${{env.TOOL_NAME}} --env ${{ env.SBOM_ENV }} --sbom ${{ env.MS_SBOM_SBOM_PATH }} --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
 
