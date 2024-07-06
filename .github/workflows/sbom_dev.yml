@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-    TOOL_NAME: ${{ github.repository }}
+    TOOL_NAME: ${{ github.repository.name }}
     SUPPLIER_NAME: Interlynk
     SUPPLIER_URL: https://interlynk.io
     DEFAULT_TAG: v0.0.1
@@ -63,5 +63,5 @@ jobs:
           ls -la ${{ env.SBOM_TEMP_DIR}}/_manifest/spdx_2.2/
 
       - name: Upload SBOM 
-        run: python3 ${{ env.PYLYNK_TEMP_DIR }}/pylynk upload --prod ${{env.TOOL_NAME}} --env ${{ env.SBOM_ENV }} --sbom ${{ env.SBOM_TEMP_DIR }}/_manifest/spdx_2.2/manifest.spdx.json --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
+        run: python3 ${{ env.PYLYNK_TEMP_DIR }}/pylynk.py upload --prod ${{env.TOOL_NAME}} --env ${{ env.SBOM_ENV }} --sbom ${{ env.SBOM_TEMP_DIR }}/_manifest/spdx_2.2/manifest.spdx.json --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
 
