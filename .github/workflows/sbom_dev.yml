@@ -37,16 +37,18 @@ jobs:
           python-version: '3.x'  # Specify the Python version needed
   
       - name: Checkout Python SBOM tool
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: 'interlynk-io/pylynk'  # Replace with actual repo
           path: '$RUNNER_TEMP/pylynk'
+          ref: latest
   
       - name: Install Python dependencies
         run: |
           cd $RUNNER_TEMP/pylynk
           pip install -r requirements.txt
-          cd -
+          echo "$PWD"
+          ls -la
 
       - name: Generate SBOM
         run: |
