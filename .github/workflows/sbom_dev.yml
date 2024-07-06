@@ -1,0 +1,61 @@
+name: Dev| Build SBOM
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+  pull_request:
+    branches-ignore:
+      - 'main'
+  workflow_dispatch:
+
+env:
+    TOOL_NAME: ${{ github.repository }}
+    SUPPLIER_NAME: Interlynk
+    SUPPLIER_URL: https://interlynk.io
+
+jobs:
+  build-sbom:
+    name: Build SBOM
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3 
+        with:
+            fetch-depth: 0
+
+      - name: Get Tag
+        id: get_tag
+        run: echo "LATEST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Specify the Python version needed
+  
+      - name: Checkout Python SBOM tool
+        uses: actions/checkout@v3
+        with:
+          repository: 'interlynk-io/pylynk'  # Replace with actual repo
+          path: '$RUNNER_TEMP/pylynk'
+  
+      - name: Install Python dependencies
+        run: |
+          cd $RUNNER_TEMP/pylynk
+          pip install -r requirements.txt
+          cd -
+
+      - name: Generate SBOM
+        run: |
+          curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
+          chmod +x $RUNNER_TEMP/sbom-tool
+          $RUNNER_TEMP/sbom-tool generate -b ./out -bc . -pn ${{ env.TOOL_NAME }} -pv ${{ env.LATEST_TAG }} -ps ${{ env.SUPPLIER_NAME}} -nsb ${{ env.SUPPLIER_URL }}
+          ls ./out/_manifest/spdx_2.2/
+          shell: bash
+
+      - name: Upload SBOM 
+        run: python3 $RUNNER_TEMP/pylynk upload --prod ${{env.TOOL_NAME}} --env 'development' --sbom ./out/_manifest/spdx_2.2/manifest.spdx.json --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
+

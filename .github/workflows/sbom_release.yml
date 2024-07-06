@@ -1,7 +1,9 @@
-name: Build and Push SBOM to Interlynk
+name: Release| Build SBOM
 
 on:
-  workflow_dispatch
+  release:
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   build-sbom:
@@ -25,12 +27,10 @@ jobs:
       - name: Build SBOM
         run: |
           syft --source-name 'sbomasm' --source-version ${{ env.tag }} --exclude ./public --exclude ./.github -o cyclonedx-json --file sbomasm.cdx.json .
-      
-      - name: Clone Python Tool (replace with actual organization and repo)
-        run: |
-          git clone https://interlynk-io:${{ secrets.GITHUB_TOKEN }}@github.com/interlynk-io/pylynk
-          cd pylynk ; pip3 install -r requirement.txt; cp pylynk* /tmp; cp lynkctx.py /tmp; chmod +x /tmp/pylynk*; chmod +x /tmp/lynkctx.py  # Navigate into the cloned directory
-     
       - name: Upload SBOM
         run: |
-          python3 /tmp/pylynk.py upload --prod 'sbomasm' --sbom sbomasm.cdx.json --${{ secrets.INTERLYNK_SECURITY_TOKEN }}
+          curl -v "https://api.interlynk.io/lynkapi" \
+            -H "Authorization: Bearer ${{ secrets.INTERLYNK_SECURITY_TOKEN }}" \
+            -F 'operations={"query":"mutation uploadSbom($doc: Upload!, $projectId: ID!) { sbomUpload(input: { doc: $doc, projectId: $projectId }) { errors } }","variables":{"doc":null,"projectId": "${{ vars.INTERLYNK_PRODUCT_ID }}" }}' \
+            -F 'map={"0":["variables.doc"]}' \
+            -F '0=@"sbomasm.cdx.json";type=application/json'
