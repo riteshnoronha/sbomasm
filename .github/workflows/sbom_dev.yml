@@ -37,16 +37,19 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'  # Specify the Python version needed
+
+      - name: Create temp directory
+        run: echo "TEMP_DIR=$RUNNER_TEMP/pylynk" >> $GITHUB_ENV
   
       - name: Checkout Python SBOM tool
         uses: actions/checkout@v3
         with:
           repository: 'interlynk-io/pylynk'  # Replace with actual repo
-          path: '$RUNNER_TEMP/pylynk'
+          path: ${{ env.TEMP_DIR }}
   
       - name: Install Python dependencies
         run: |
-          cd $RUNNER_TEMP/pylynk
+          cd ${{ env.TEMP_DIR }}
           pip install -r requirements.txt
           echo "$PWD"
           ls -la
