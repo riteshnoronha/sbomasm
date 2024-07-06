@@ -61,11 +61,8 @@ jobs:
           curl -Lo $RUNNER_TEMP/sbom-tool ${{ env.MS_SBOM_TOOL_URL }}
           chmod +x $RUNNER_TEMP/sbom-tool
           $RUNNER_TEMP/sbom-tool generate -b ${{ env.SBOM_TEMP_DIR }} -bc . -pn ${{ env.TOOL_NAME }} -pv ${{ env.LATEST_TAG }} -ps ${{ env.SUPPLIER_NAME}} -nsb ${{ env.SUPPLIER_URL }} 
-          ls -la ${{ env.SBOM_TEMP_DIR}}/_manifest/spdx_2.2/
 
       - name: Upload SBOM 
         run: |
-          ls -la ${{ env.MS_SBOM_SBOM_PATH }} 
-          env | sort
           python3 ${{ env.PYLYNK_TEMP_DIR }}/pylynk.py --verbose upload --prod ${{env.TOOL_NAME}} --env ${{ env.SBOM_ENV }} --sbom ${{ env.MS_SBOM_SBOM_PATH }} --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
 
