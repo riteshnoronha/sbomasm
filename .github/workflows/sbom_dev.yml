@@ -15,8 +15,10 @@ env:
     SUPPLIER_URL: https://interlynk.io
     DEFAULT_TAG: v0.0.1
     PYLYNK_TEMP_DIR: $RUNNER_TEMP/pylynk
-    SBOM_TEMP_DIR: $RUNNER_TEMP/sbom
     MS_SBOM_TOOL_URL: https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
+    SBOM_TEMP_DIR: $RUNNER_TEMP/sbom
+    SBOM_ENV: development
+
 
 jobs:
   build-sbom:
@@ -51,15 +53,15 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate SBOM
+        shell: bash
         run: |
           cd ${{ github.workspace }}
           mkdir -p ${{ env.SBOM_TEMP_DIR}}
           curl -Lo $RUNNER_TEMP/sbom-tool ${{ env.MS_SBOM_TOOL_URL }}
           chmod +x $RUNNER_TEMP/sbom-tool
-          $RUNNER_TEMP/sbom-tool generate -b ${{ env.SBOM_TEMP_DIR }} -bc . -pn ${{ env.TOOL_NAME }} -pv ${{ env.LATEST_TAG }} -ps ${{ env.SUPPLIER_NAME}} -nsb ${{ env.SUPPLIER_URL }}
+          $RUNNER_TEMP/sbom-tool generate -b ${{ env.SBOM_TEMP_DIR }} -bc . -pn ${{ env.TOOL_NAME }} -pv ${{ env.LATEST_TAG }} -ps ${{ env.SUPPLIER_NAME}} -nsb ${{ env.SUPPLIER_URL }} 
           ls -la ${{ env.SBOM_TEMP_DIR}}/_manifest/spdx_2.2/
-          shell: bash
 
       - name: Upload SBOM 
-        run: python3 $RUNNER_TEMP/pylynk upload --prod ${{env.TOOL_NAME}} --env 'development' --sbom ./out/_manifest/spdx_2.2/manifest.spdx.json --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
+        run: python3 $RUNNER_TEMP/pylynk upload --prod ${{env.TOOL_NAME}} --env ${{ env.SBOM_ENV }} --sbom ${{ env.SBOM_TEMP_DIR }}/_manifest/spdx_2.2/manifest.spdx.json --token ${{ secrets.INTERLYNK_SECURITY_TOKEN }}
 
