@@ -13,7 +13,6 @@ env:
   SUPPLIER_URL: https://interlynk.io
   PYLYNK_TEMP_DIR: $RUNNER_TEMP/pylynk
   SBOM_TEMP_DIR: $RUNNER_TEMP/sbom
-  SBOM_FILE_PATH: $RUNNER_TEMP/sbom/_manifest/spdx_2.2/manifest.spdx.json
   MS_SBOM_TOOL_URL: https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
   MS_SBOM_TOOL_EXCLUDE_DIRS: "**/samples/**"
 
@@ -62,9 +61,10 @@ jobs:
           cd ${{ github.workspace }}
           mkdir -p ${{ env.SBOM_TEMP_DIR}}
           $RUNNER_TEMP/sbom-tool generate -b ${{ env.SBOM_TEMP_DIR }} -bc . -pn ${{ env.TOOL_NAME }} -pv  ${{ env.LATEST_TAG }} -ps ${{ env.SUPPLIER_NAME}} -nsb ${{ env.SUPPLIER_URL }} -cd "--DirectoryExclusionList ${{ env.MS_SBOM_TOOL_EXCLUDE_DIRS }}"
+          ls -lR ${{ env.SBOM_TEMP_DIR }}
 
       - name: Upload SBOM as Release Asset
         uses: actions/upload-artifact@v4
         with:
           name: sbom
-          path: ${{ env.SBOM_FILE_PATH }}
+          path: ${{ env.SBOM_TEMP_DIR }}/_manifest/spdx_2.2
