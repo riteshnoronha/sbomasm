@@ -50,7 +50,6 @@ jobs:
         run: |
           curl -Lo $RUNNER_TEMP/sbom-tool ${{ env.MS_SBOM_TOOL_URL }}
           chmod +x $RUNNER_TEMP/sbom-tool
-          $RUNNER_TEMP/sbom-tool version
 
       - name: Releaser
         run: make release
