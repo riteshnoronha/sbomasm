@@ -67,4 +67,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sbom
-          path: ${{ env.SBOM_TEMP_DIR }}/_manifest/spdx_2.2/manifest.spdx.json
+          path: /home/runner/work/_temp/sbom/_manifest/spdx_2.2/manifest.spdx.json
+          if-no-files-found: error
