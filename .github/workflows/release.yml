@@ -46,6 +46,12 @@ jobs:
       - run: go version
       - run: goreleaser -v
 
+      - name: Download sbom-tool
+        run: |
+          curl -Lo $RUNNER_TEMP/sbom-tool ${{ env.MS_SBOM_TOOL_URL }}
+          chmod +x $RUNNER_TEMP/sbom-tool
+          $RUNNER_TEMP/sbom-tool version
+
       - name: Releaser
         run: make release
         env:
@@ -56,16 +62,10 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           mkdir -p ${{ env.SBOM_TEMP_DIR}}
-          curl -Lo $RUNNER_TEMP/sbom-tool ${{ env.MS_SBOM_TOOL_URL }}
-          chmod +x $RUNNER_TEMP/sbom-tool
           $RUNNER_TEMP/sbom-tool generate -b ${{ env.SBOM_TEMP_DIR }} -bc . -pn ${{ env.TOOL_NAME }} -pv  ${{ env.LATEST_TAG }} -ps ${{ env.SUPPLIER_NAME}} -nsb ${{ env.SUPPLIER_URL }} -cd "--DirectoryExclusionList ${{ env.MS_SBOM_TOOL_EXCLUDE_DIRS }}"
 
       - name: Upload SBOM as Release Asset
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ env.SBOM_FILE_PATH }}
-          asset_name: sbomasm-${{ env.LATEST_TAG }}.sbom.spdx.json
-          asset_content_type: application/json
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: sbom
+          path: ${{ env.SBOM_FILE_PATH }}
